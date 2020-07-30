@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script language="javascript" type="text/javascript">
+		window.history.forward();
+</script>	
+	<title>Online Book Store</title>
+	<meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1,shrink-to-fit=no">
+	<meta name="google-signin-scope" content="profile email">
+    <meta name="google-signin-client_id" content="430318993411-dg7ii2benm31hpnvuq1hsh40ni7g82d4.apps.googleusercontent.com">
+
+	<link href="https://fonts.googleapis.com/css?family=Prompt&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha256-YLGeXaapI0/5IgZopewRJcFXomhRMlYYjugPLSyNjTY=" crossorigin="anonymous" />
+	<link rel="stylesheet" type="text/css" href="pro.css">
+	
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.4.1.js" integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=" crossorigin="anonymous"></script>
+	
+<script type="text/javascript">
+	function change()
+	{
+		if(document.getElementById("name").value==""||document.getElementById("email").value==""||document.getElementById("mobile").value==""||document.getElementById("password").value=="")
+		{
+			document.getElementById("err").innerHTML="please fill all the fields";
+			return;
+		}
+					
+		var full_name=document.getElementById("name").value;
+		var email=document.getElementById("email").value;
+		var mobile=document.getElementById("mobile").value;
+		var password=document.getElementById("password").value;
+
+		let at = email.indexOf("@");
+		let point = email.lastIndexOf(".");
+		if(at < 1 || point < (at + 2) || (point + 2) >= email.length){
+			document.getElementById("err").innerHTML="please enter valid email address...!";
+			document.getElementById("inv").style.display="none";
+			document.getElementById("invmob").style.display="none";
+			return;
+
+		}
+	
+		var phoneno = /^\d{10}$/;
+		if(mobile.match(phoneno)){}
+		else{
+			document.getElementById("err").innerHTML="please enter valid mobile number...!";
+			document.getElementById("invmob").style.display="none";
+			document.getElementById("inv").style.display="none";
+			return;
+
+		}
+		
+					$(document).on('click','#up:not(.clicked)',function(){
+					$(this).prop("disabled", true);
+					$(this).css("cursor","not-allowed");
+					$(this).text("please wait");
+					});
+		var xhttp;
+		xhttp = new XMLHttpRequest();
+		xhttp.open("GET", "register.php?full_name="+full_name+"&email="+email+"&mobile="+mobile+"&password="+password, true);
+		xhttp.send();
+		
+		xhttp.onreadystatechange = function() 
+		{
+			if (this.readyState == 4 && this.status == 200) 
+			{
+				document.getElementById("err").innerHTML=xhttp.responseText;
+				if(xhttp.responseText.trim() == "!!Error in registering your data,please contact administrator." || xhttp.responseText.trim() == "Message not sent" ||  xhttp.responseText.trim() == "**This email ID and Mobile number is already registered." ||
+				   xhttp.responseText.trim() == "Connection not established" || xhttp.responseText.trim() == "**This email ID is already registered." || xhttp.responseText.trim() == "**This mobile number is already registered."){
+				   
+				}
+				else{
+					document.getElementById("otp").style.display="block";
+					document.getElementById("up").style.display="none";
+					document.getElementById("suc").innerHTML=xhttp.responseText;
+					document.getElementById("err").innerHTML="";
+					document.getElementById("val").style.display="none";
+					document.getElementById("valmob").style.display="none";
+				}
+			}
+		}
+	}
+</script>
+
+<script type="text/javascript">
+	function login()
+	{
+		var form = document.getElementById("myform");
+		var username=document.getElementById("user_email").value;
+		var password=document.getElementById("user_password").value;
+		$.ajax
+		({
+			type: "GET",
+			url: "login.php",
+			async:false,
+			<!-- data: 'user_email='+username+'user_password='+password, -->
+			data: 'user_email='+username+'&user_password='+password,
+			//datatype: "html",
+			success: function(result)
+			{
+				if(result == 1)
+				{
+					document.getElementById("myform").submit();
+					form.reset();
+				}
+				else
+				{
+					if(username == "" || password == "")
+						document.getElementById("errl").innerHTML = "Please fill the details first and then try to login!!";
+					else
+						document.getElementById("errl").innerHTML="**user does not exists, please sign up &rArr;"
+				}     
+			}
+		})
+	}
+</script>
+
+
+<script type="text/javascript">
+function otp_verify()
+	{
+		var form = document.getElementById("myfo");
+		if(document.getElementById("otp_in").value=="")
+			{
+				document.getElementById("err").innerHTML="**please fill the otp first";
+				return;
+			}
+		var otp=document.getElementById("otp_in").value;
+		var email=document.getElementById("email").value;
+	
+		var xhttp;
+		xhttp = new XMLHttpRequest();
+		xhttp.open("GET", "verify.php?otp="+otp+"&email="+email, true);
+		xhttp.send();
+		xhttp.onreadystatechange = function() 
+		{
+			if (this.readyState == 4 && this.status == 200) 
+			{
+				document.getElementById("suc").innerHTML="";
+				document.getElementById("err").innerHTML=this.responseText;
+				if(xhttp.responseText.trim() == "<div style='color:green' class='text-success'><b>**your account is verified, Now you can login!!</b></div>"){
+					document.getElementById("otp").style.display="none";
+					document.getElementById("up").style.display="block";	
+					form.reset();
+				}
+			}
+		}
+	}
+</script>
+
+<script type="text/javascript">
+$(function() {
+    $(".preload").fadeOut(1000, function(){
+        $(".content").fadeIn();        
+    });
+});
+		function onSignIn(googleUser) {
+			var profile = googleUser.getBasicProfile();
+			console.log('Full Name: ' + profile.getName());
+			console.log("Email: " + profile.getEmail());
+			document.getElementById("suc1").innerHTML="Successfully Signed in with Google...";
+		}
+		
+		function signOut() {
+			var auth2 = gapi.auth2.getAuthInstance();
+			auth2.signOut().then(function () {
+			console.log('User signed out.');
+			document.getElementById("suc1").innerHTML="Successfully Signed out with Google...";
+			});
+		}
+		
+			function myFunction() {
+					var x = document.getElementById("user_password");
+					if (x.type === "password") {
+					x.type = "text";
+					document.getElementById("im").src="./image/download1.png";
+					} else {
+					x.type = "password";
+					document.getElementById("im").src="./image/download.png"; 
+					}
+				}
+				function myFunction1() {
+					var x = document.getElementById("password");
+					if (x.type === "password") {
+					x.type = "text";
+					document.getElementById("im1").src="./image/download1.png";
+					} else {
+					x.type = "password";
+					document.getElementById("im1").src="./image/download.png"; 
+					}
+				}
+				
+				function emailvalid(){
+					var email=document.getElementById("email").value;
+					let at = email.indexOf("@");
+					let point = email.lastIndexOf(".");
+					if(at < 1 || point < (at + 2) || (point + 2) >= email.length){
+						document.getElementById("inv").style.display="block";
+						document.getElementById("val").style.display="none";
+
+					}
+					else{
+						document.getElementById("val").style.display="block";
+						document.getElementById("inv").style.display="none";
+					}
+				}
+				
+				function mob(){
+					 var mobile=document.getElementById("mobile").value;
+					 var phoneno = /^\d{10}$/;
+					  if(mobile.match(phoneno))
+					  {
+						 document.getElementById("invmob").style.display="none";
+						document.getElementById("valmob").style.display="block";
+					  }
+					  else
+					  {
+						document.getElementById("valmob").style.display="none";
+						document.getElementById("invmob").style.display="block";
+					  }
+				}
+				
+				function focus1(){
+				document.getElementById('user_email').focus();
+				}
+				function focus2(){
+				document.getElementById('name').focus();
+				}
+</script>
+</head>
+
+<body>
+	<div class="preload"><img src="./image/bl.gif" alt="loader"></div>
+	<div class="content" style="display:none">
+  <div class="container" id="container">
+	<div class="form-container sign-in-container">
+		<form id="myform" action="./book/home.php" >
+			<h1 title="SignIn plz">Sign in</h1><br>
+			<div class="input-group">
+				<div class="g-signin2 input-group-area" data-onsuccess="onSignIn" style="width:90px;" ></div>
+				<div class="input-group-icon" id="gSignOutWrapper">
+					<div id="customBtn" class="customGPlusSignOut" onclick="signOut();" >
+						<span class="icon"></span>
+						<span class="buttonText">Sign out</span>
+					</div>
+				</div>
+			</div>
+		 <br>			
+			<!-- <div id="fb-root"></div> -->
+			<!-- <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v4.0&appId=463279540919975&autoLogAppEvents=1"></script> -->
+			<!-- <div class="fb-login-button" data-width="100px" data-size="large" data-button-type="continue_with" data-auto-logout-link="true" data-use-continue-as="true"></div>	 -->
+				
+			<span>Use your account...</span>
+			<input type="email" placeholder="Email"  id="user_email" required />
+			<div class="input-group">
+			<div class="input-group-area"><input type="password" placeholder="Password"  id="user_password"  required></div>
+			<div class="input-group-icon"><img src="./image/download.png" alt="eyeOpen" id="im" onclick="myFunction()" style="width:84%;" /></div>
+			</div>
+			<br>			
+			<button type="button" onclick="login()" style="color:red" >login</button><br>
+			
+			<div style="color:red;font-weight:bold;" id="errl"></div>
+			<div id="suc1" style="color:green;font-weight:bold;" class='text-success' ></div>
+
+		</form>
+	</div>
+	
+ <div class="form-container sign-up-container">	 
+	<form action="register.php"  id="myfo" method="get">
+        <h1 title="create a New Account">Create Account</h1><br>		
+        <input type="text" placeholder="Fullname" id="name" name="full" required />
+        <input type="email" placeholder="email" id="email" name="em" onblur="emailvalid()" required />
+		<p style="text-align:left;display:none;margin-top:-10px;margin-bottom:-10px;color:red;font-size:10px;" id="inv"><b>** Invalid Email Address</b></p>
+		<p style="text-align:left;display:none;margin-top:-10px;margin-bottom:-10px;color:green;font-size:10px;" id="val"><b>Valid Email Address</b></p>
+		
+		<input type="number" min="7" step="1" onkeydown='javascript: return event.keyCode == 69 ? false : true' placeholder="mobile_number" id="mobile" name="mobi" onblur="mob()" required />
+		<p style="text-align:left;display:none;margin-top:-10px;margin-bottom:-2px;color:red;font-size:10px;" id="invmob"><b>** Invalid Mobile Number</b></p>
+		<p style="text-align:left;display:none;margin-top:-10px;margin-bottom:-2px;color:green;font-size:10px;" id="valmob"><b>Valid Mobile Number</b></p>
+		
+		<div class="input-group">
+			<div class="input-group-area"><input type="password" placeholder="Password" id="password"  name="pass" required /></div>
+			<div class="input-group-icon"><img src="./image/download.png" alt="eyeOpen" id="im1" onclick="myFunction1()" style="width:84%;margin:0px;" /></div>
+		 </div>
+		
+		<div id="otp" style="display:none;width:37%;">
+			<input type="text"  id="otp_in" placeholder="OTP" style="height:60px;" />
+			<button type="button" onclick="otp_verify()" style="color:red">verify</button><br>
+		</div>
+		<br /> <button type="button" id="up" onclick="change()"  style="color:red;">Register</button><br>
+		<div id="err" style="color:red;font-weight:bold;" ></div>
+		<div id="suc" style="color:green;font-weight:bold;" ></div>
+    </form>
+</div>
+
+
+			<div class="overlay-container">
+				<div class="overlay">
+					<div class="overlay-panel overlay-left">
+						<h1>Welcome Back!!</h1>
+						<p>If you have your Account <br>Then login please...</p>
+						<button  class="ghost" id="signIn" onclick="focus1()"> <-- Sign In</button>
+					</div>
+					<div class="overlay-panel overlay-right">
+						<h1>Hello</h1>
+						<p>For using Book Store<br>start journey with us</p>
+						<button  class="ghost" id="signUp" onclick="focus2()" accesskey="s">Sign Up --> </button>
+					</div>
+				</div>
+			</div>
+	</div>
+	
+			<script type="text/javascript">
+				const signUpButton = document.getElementById('signUp');
+				const signInButton = document.getElementById('signIn');
+				const container = document.getElementById('container');
+				signUpButton.addEventListener('click', () => {
+				container.classList.add('right-panel-active');
+				});
+				signInButton.addEventListener('click', () => {
+				container.classList.remove('right-panel-active');
+				});
+			</script>
+		</div> 
+	</body>
+</html>
